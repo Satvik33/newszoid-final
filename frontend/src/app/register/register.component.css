@@ -1,0 +1,23 @@
+.registration-form {
+  margin:auto;
+
+  
+}
+.title{
+  text-align: center;
+}
+.form-button {
+  margin: 0px 5px;
+}
+.container{
+ width:100%;
+ margin: auto;
+ text-align: center;
+}
+.form-element{
+  width : 40%;
+}
+
+.mat-icon {
+  transform: scale(.7);
+}

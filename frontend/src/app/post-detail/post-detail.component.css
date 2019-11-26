@@ -1,0 +1,16 @@
+.post {
+  width: 70%;
+  margin: 20px auto;
+}
+.info {
+  display: flex;
+  justify-content: space-between;
+}
+.icon-enabled{
+  color: blue;
+  cursor: pointer;
+}
+.icon-disabled {
+  padding: 3px;
+  cursor: pointer;
+}

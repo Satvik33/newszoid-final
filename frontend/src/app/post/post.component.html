@@ -1,0 +1,66 @@
+<!-- <mat-card class="post" (click)="postDetail()">
+  <mat-card-content>
+   
+    <video width="300" height="200" controls controlsList="nodownload" style="margin: auto;">
+        <source src="{{post?.videoUrl}}" type="video/mp4">
+      </video> 
+    </div>
+    <br>
+    <mat-card-title class="ellipse">{{post?.title}}</mat-card-title>
+    
+    <mat-card-subtitle style="display: flex; align-items: center" *ngIf="post?.postedBy">
+      <mat-icon>accessibility_new</mat-icon>
+      {{post?.postedBy}} | 
+      <mat-icon>remove_red_eye</mat-icon>{{views}} 
+    </mat-card-subtitle>
+    <mat-card-subtitle style="display: flex; align-items: center">
+      
+      {{post?.timestamp | date:'mediumDate'}} | {{post?.category}} |
+      {{post?.location}}
+    </mat-card-subtitle>
+    <mat-card-subtitle style="display: flex; align-items: center" *ngIf="post?.category">
+      
+        {{post?.category}} |
+        {{post?.location}}
+      </mat-card-subtitle>
+  </mat-card-content>
+
+</mat-card> -->
+<mat-card class="post" (click)="postDetail()">
+  <mat-card-content>
+    <div (contextmenu)="onRightClick($event)">
+      <video width="300" height="200" controls>
+        <source src="{{post?.videoUrl}}" type="video/mp4">
+      </video>
+    </div>
+    <br>
+    <mat-card-title class="ellipse">{{post?.title}}</mat-card-title>
+
+    <mat-card-subtitle style="display: flex; align-items: center" *ngIf="post?.postedBy">
+      <mat-icon>accessibility_new</mat-icon>
+      {{post?.postedBy}} |
+      <mat-icon>remove_red_eye</mat-icon>{{views}} | {{post?.timestamp | date:'mediumDate'}}
+    </mat-card-subtitle>
+    <!-- <mat-card-subtitle style="display: flex; align-items: center">
+        
+        {{post?.timestamp | date:'mediumDate'}}
+      </mat-card-subtitle> -->
+    <mat-card-subtitle style="display: flex; align-items: center; margin-top: -12px !important"
+      *ngIf="post?.category && post?.postedBy">
+
+      {{post?.category}} |
+      {{post?.location}}
+    </mat-card-subtitle>
+
+    <mat-card-subtitle style="display: flex; align-items: center;" *ngIf="post?.category && !post?.postedBy">
+
+      {{post?.timestamp | date:'mediumDate'}} | {{post?.category}} | {{post?.location}}
+    </mat-card-subtitle>
+
+    <mat-card-subtitle style="display: flex; align-items: center;" *ngIf="!post?.category && !post?.postedBy">
+
+        {{post?.timestamp | date:'mediumDate'}}
+      </mat-card-subtitle>
+  </mat-card-content>
+
+</mat-card>

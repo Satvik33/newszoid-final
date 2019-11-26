@@ -1,0 +1,21 @@
+.post {
+      
+  width: 90%;
+  margin: auto;
+  height: 270px;
+}
+
+
+.ellipse{ 
+  width: 300px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  margin:0;
+  padding:0;
+}
+
+.video
+{
+  height: 200px !important;
+}

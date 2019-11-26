@@ -1,0 +1,25 @@
+<section>
+  <form #myForm="ngForm" novalidate>
+    <h2 mat-dialog-title id="title">Login</h2>
+    <mat-dialog-content>
+      <mat-form-field>
+        <input matInput placeholder="Username" ngModel name="username" required>
+      </mat-form-field>
+      <mat-form-field>
+        <input matInput placeholder="Password" ngModel type="password" name="password" required>
+      </mat-form-field>
+      <span *ngIf="errorMessage">{{errorMessage}}</span>
+    </mat-dialog-content>
+    <mat-dialog-actions>
+
+      <button mat-raised-button color="primary" (click)="loginUser(myForm)" class="form-button"
+        mat-button>Login</button>
+      <button mat-raised-button [mat-dialog-close]="true" routerLink="/register" class="form-button">Individual? Kindly
+        Register</button>
+
+      <button mat-raised-button [mat-dialog-close]="true" routerLink="/orgRegister1" class="form-button">Organization?
+        Kindly Register</button>
+
+    </mat-dialog-actions>
+  </form>
+</section>

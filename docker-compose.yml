@@ -1,0 +1,202 @@
+version: '3'
+
+services:
+  mysql:
+    image: mysql:5.7
+    ports:
+      - "3306:3306"
+    networks:
+      - custBridge
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_ROOT_HOST=%
+    volumes:
+      - $HOME/mysql:/var/lib/mysql
+
+  mongo:
+    image: mongo
+    restart: always
+    ports:
+      - 27017:27017
+    networks:
+      - custBridge
+    volumes:
+      - $HOME/mongo:/data/db
+
+  neo4j:
+    image: neo4j:latest
+    restart: always
+    ports:
+      - 7474:7474
+      - 7687:7687
+    networks:
+      - custBridge
+    environment:
+      - NEO4J_AUTH=neo4j/secret
+    volumes:
+      - $HOME/neo4j/data:/data
+
+  rabbitmq:
+    image: rabbitmq:management
+    networks:
+      - custBridge
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
+  config-server:
+    build: config-server/
+    restart: always
+    networks:
+      - custBridge
+    ports:
+      - 8888:8888
+    environment:
+      WAIT_HOSTS: rabbitmq:5672, rabbitmq:15672, neo4j:7687, mongo:27017, mysql:3306
+      WAIT_HOSTS_TIMEOUT: 180
+
+  eureka-server:
+    build: eureka-server/
+    container_name: eureka-server
+    restart: always
+    networks:
+      - custBridge
+    ports:
+      - 8085:8085
+    environment:
+      WAIT_HOSTS: config-server:8888
+      WAIT_HOSTS_TIMEOUT: 180
+
+  api-gateway:
+    build: api-gateway/
+    container_name: api-gateway
+    depends_on:
+      - config-server
+      - eureka-server
+    restart: always
+    networks:
+      - custBridge
+    ports:
+      - 8443:8443
+    environment:
+      WAIT_HOSTS: eureka-server:8085
+      WAIT_HOSTS_TIMEOUT: 180
+
+
+  registration-service:
+    build: registration-service/
+    restart: always
+    networks:
+      - custBridge
+    depends_on:
+      - config-server
+      - mongo
+      - eureka-server
+      - rabbitmq
+      - api-gateway
+    expose:
+      - 8092
+    environment:
+      WAIT_HOSTS: eureka-server:8085
+      WAIT_HOSTS_TIMEOUT: 180
+
+  login-service:
+    build: login-service/
+    depends_on:
+      - config-server
+      - eureka-server
+      - mysql
+    restart: always
+    networks:
+      - custBridge
+    expose:
+      - 8091
+    environment:
+      WAIT_HOSTS: eureka-server:8085, registration-service:8092
+      WAIT_HOSTS_TIMEOUT: 180
+
+  search:
+    build: search-service/
+    depends_on:
+      - eureka-server
+      - api-gateway
+      - rabbitmq
+      - content-service
+    restart: always
+    networks:
+      - custBridge
+    expose:
+      - 8094
+    environment:
+      WAIT_HOSTS: eureka-server:8085
+      WAIT_HOSTS_TIMEOUT: 180
+
+  recommendation-service:
+    build: recommendation-service
+    depends_on:
+      - neo4j
+    restart: always
+    networks:
+      - custBridge
+    expose:
+      - 8096
+    environment:
+      WAIT_HOSTS: eureka-server:8085, registration-service:8092
+      WAIT_HOSTS_TIMEOUT: 180
+
+  content-service:
+    build: content-service/
+    depends_on:
+      - config-server
+      - eureka-server
+      - mongo
+      - rabbitmq
+      - registration-service
+    restart: always
+    networks:
+      - custBridge
+    expose:
+      - 8093
+    environment:
+      WAIT_HOSTS: eureka-server:8085, registration-service:8092, search:8094, recommendation-service:8096
+      WAIT_HOSTS_TIMEOUT: 180
+
+
+  news-zoid-frontend:
+    build: frontend/
+    container_name: news-zoid-frontend-container
+    networks:
+      - custBridge
+    restart: always
+    ports:
+      - "4200:4200"
+
+  prometheus:
+    image: prom/prometheus
+    ports:
+      - 9090:9090
+    restart: always
+    networks:
+      - custBridge
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+    #    command:
+    #      - "--config.file=/etc/prometheus/prometheus.yml"
+    #      - "--storage.tsdb.path=/prometheus"
+
+
+  grafana:
+    image: grafana/grafana
+    networks:
+      - custBridge
+    ports:
+      - 3000:3000
+    depends_on:
+      - prometheus
+
+networks:
+  custBridge:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.9.0.0/16

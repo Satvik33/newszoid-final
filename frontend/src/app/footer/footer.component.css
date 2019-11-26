@@ -1,0 +1,41 @@
+.example-fill-remaining-space {
+    /* This fills the remaining space, by using flexbox. 
+       Every toolbar row uses a flexbox row layout. */
+    flex: 1 1 auto;
+  }
+  .icon-button {
+    
+    transform: scale(1.6);
+  }
+  .spacer {
+    -webkit-box-flex: 1;
+    -ms-flex: 1 1 auto;
+    flex: 1 1 auto;
+    
+}
+
+.footer{
+  position: sticky;
+position: -webkit-sticky !important;
+width: 100%;
+margin-bottom: 0px;
+padding-bottom: 0;
+height: 50;
+bottom: 0;
+}
+
+
+.copyright{
+  font-size: 15px;
+}
+#icons:hover{
+  transform: scale(1.2);
+}
+@media only screen and (max-width: 500px) {
+  #icons{
+    font-size: 70%;
+  }
+  .icon-button{
+    font-size: 70%;
+  }
+}
